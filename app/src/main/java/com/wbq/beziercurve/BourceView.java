@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 
 /**
  * 作者：${wbq} on 2017/1/6 11:11
@@ -111,7 +112,7 @@ public class BourceView extends SurfaceView implements SurfaceHolder.Callback{
         });
         upControl=ValueAnimator.ofFloat(0,1);
         upControl.setDuration(900);
-        upControl.setInterpolator(new DecelerateInterpolator());
+        upControl.setInterpolator(new BounceInterplator());
         upControl.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -156,7 +157,7 @@ public class BourceView extends SurfaceView implements SurfaceHolder.Callback{
             public void onAnimationUpdate(ValueAnimator animation) {
                 float t=animation.getAnimatedFraction();
                 freeBallDistance=34*t-5*t*t;
-                if(!isUpControlDied) {
+                if(isUpControlDied) {
                     postInvalidate();
                 }
             }
@@ -239,7 +240,7 @@ public class BourceView extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-            Canvas canvas=holder.lockCanvas();
+        Canvas canvas=holder.lockCanvas();
         draw(canvas);
         holder.unlockCanvasAndPost(canvas);
     }
@@ -296,5 +297,12 @@ public class BourceView extends SurfaceView implements SurfaceHolder.Callback{
         mPaint.setStyle(Paint.Style.FILL);
         canvas.drawCircle(getWidth()/2-mLineWidth/2,getHeight()/2,10,mPaint);
         canvas.drawCircle(getWidth()/2+mLineWidth/2,getHeight()/2,10,mPaint);
+    }
+    class BounceInterplator implements Interpolator{
+
+        @Override
+        public float getInterpolation(float input) {
+            return (float)(1-Math.exp(-3*input)*Math.cos(10*input));
+        }
     }
 }
